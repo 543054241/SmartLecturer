@@ -53,6 +53,7 @@ def cached_process_pdf(src_bytes: bytes, params: dict) -> dict:
 	from app.services import pdf_processor
 
 	file_hash = get_file_hash(src_bytes, params)
+	column_padding = params.get("column_padding", 10)
 
 	# 尝试从缓存文件加载
 	cached_result = load_result_from_file(file_hash)
@@ -66,7 +67,8 @@ def cached_process_pdf(src_bytes: bytes, params: dict) -> dict:
 				params["font_size"],
 				font_path=(params.get("cjk_font_path") or None),
 				render_mode=params.get("render_mode", "markdown"),
-				line_spacing=params["line_spacing"]
+				line_spacing=params["line_spacing"],
+				column_padding=column_padding
 			)
 			cached_result["pdf_bytes"] = result_bytes
 			return cached_result
@@ -103,7 +105,8 @@ def cached_process_pdf(src_bytes: bytes, params: dict) -> dict:
 			params["font_size"],
 			font_path=(params.get("cjk_font_path") or None),
 			render_mode=params.get("render_mode", "markdown"),
-			line_spacing=params["line_spacing"]
+			line_spacing=params["line_spacing"],
+			column_padding=column_padding
 		)
 
 		result = {
@@ -146,6 +149,7 @@ def sidebar_form():
 		right_ratio = st.slider("右侧留白比例", 0.2, 0.6, 0.48, 0.01)
 		font_size = st.number_input("右栏字体大小", min_value=8, max_value=20, value=20, step=1)
 		line_spacing = st.slider("讲解文本行距", 0.6, 2.0, 1.2, 0.1)
+		column_padding = st.slider("栏内边距(像素)", 2, 16, 10, 1, help="控制每一栏左右内边距，防止文字被切边")
 		concurrency = st.slider("并发页数", 1, 50, 50, 1)
 		rpm_limit = st.number_input("RPM 上限(请求/分钟)", min_value=10, max_value=5000, value=150, step=10)
 		tpm_budget = st.number_input("TPM 预算(令牌/分钟)", min_value=100000, max_value=20000000, value=2000000, step=100000)
@@ -162,6 +166,7 @@ def sidebar_form():
 			"right_ratio": float(right_ratio),
 			"font_size": int(font_size),
 			"line_spacing": float(line_spacing),
+			"column_padding": int(column_padding),
 			"concurrency": int(concurrency),
 			"rpm_limit": int(rpm_limit),
 			"tpm_budget": int(tpm_budget),
@@ -175,6 +180,7 @@ def sidebar_form():
 def main():
 	setup_page()
 	params = sidebar_form()
+	column_padding_value = params.get("column_padding", 10)
 
 	# 显示当前处理状态
 	batch_results = st.session_state.get("batch_results", {})
@@ -291,7 +297,8 @@ def main():
 								params["font_size"],
 								font_path=(params.get("cjk_font_path") or None),
 								render_mode=params.get("render_mode", "markdown"),
-								line_spacing=params["line_spacing"]
+								line_spacing=params["line_spacing"],
+								column_padding=column_padding_value
 							)
 							st.session_state["batch_results"][filename] = {
 								"status": "completed",
@@ -463,7 +470,8 @@ def main():
 										params["font_size"],
 										font_path=(params.get("cjk_font_path") or None),
 										render_mode=params.get("render_mode", "markdown"),
-										line_spacing=params["line_spacing"]
+										line_spacing=params["line_spacing"],
+										column_padding=column_padding_value
 									)
 
 								st.session_state["batch_results"][filename] = {
@@ -586,7 +594,8 @@ def main():
 							params["font_size"],
 							font_path=(params.get("cjk_font_path") or None),
 							render_mode=params.get("render_mode", "markdown"),
-							line_spacing=params["line_spacing"]
+							line_spacing=params["line_spacing"],
+							column_padding=column_padding_value
 						)
 
 						recompose_results[filename] = {
@@ -663,7 +672,8 @@ def main():
 				params["font_size"],
 				font_path=(params.get("cjk_font_path") or None),
 				render_mode=params.get("render_mode", "markdown"),
-				line_spacing=params["line_spacing"]
+				line_spacing=params["line_spacing"],
+				column_padding=column_padding_value
 			)
 			st.session_state["batch_json_results"] = batch_results
 			# 构建ZIP缓存
