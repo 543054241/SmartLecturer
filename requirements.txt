@@ -1,0 +1,12 @@
+streamlit==1.38.0
+langchain==0.3.0
+langchain-google-genai==2.0.0
+google-generativeai==0.7.2
+PyMuPDF==1.24.11
+pillow==10.4.0
+python-dotenv==1.0.1
+tqdm==4.66.5
+markdown==3.6
+# 可选：更好的 Markdown 支持（表格/代码高亮等），如不需要可移除
+pymdown-extensions==10.8.1
+
