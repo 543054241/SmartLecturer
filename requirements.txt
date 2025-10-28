@@ -9,4 +9,5 @@ tqdm==4.66.5
 markdown==3.6
 # 可选：更好的 Markdown 支持（表格/代码高亮等），如不需要可移除
 pymdown-extensions==10.8.1
-
+# ReportLab：用于更稳定的PDF布局和字体支持
+reportlab==4.4.4
